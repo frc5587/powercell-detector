@@ -1,0 +1,116 @@
+{
+    "description": "",
+    "tags": [
+        {
+            "id": 19476548,
+            "tagId": 27004451,
+            "name": "Valid",
+            "value": null,
+            "labelerLogin": null,
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-01-31T20:43:48.570Z"
+        }
+    ],
+    "size": {
+        "height": 480,
+        "width": 640
+    },
+    "objects": [
+        {
+            "id": 345592381,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "TeaAndPotatoes",
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-01-31T20:43:48.570Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        300,
+                        12
+                    ],
+                    [
+                        337,
+                        53
+                    ]
+                ],
+                "interior": []
+            }
+        },
+        {
+            "id": 345592380,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "TeaAndPotatoes",
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-01-31T20:43:48.570Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        255,
+                        148
+                    ],
+                    [
+                        314,
+                        206
+                    ]
+                ],
+                "interior": []
+            }
+        },
+        {
+            "id": 345592379,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "TeaAndPotatoes",
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-01-31T20:43:48.570Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        431,
+                        128
+                    ],
+                    [
+                        487,
+                        184
+                    ]
+                ],
+                "interior": []
+            }
+        },
+        {
+            "id": 345592378,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "TeaAndPotatoes",
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-01-31T20:43:48.570Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        142,
+                        75
+                    ],
+                    [
+                        189,
+                        122
+                    ]
+                ],
+                "interior": []
+            }
+        }
+    ]
+}

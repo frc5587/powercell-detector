@@ -1,0 +1,33 @@
+{
+    "classes": [
+        {
+            "title": "Power_Cell",
+            "shape": "rectangle",
+            "color": "#F8E71C",
+            "geometry_config": {},
+            "id": 1290411,
+            "hotkey": ""
+        }
+    ],
+    "tags": [
+        {
+            "name": "Invalid",
+            "value_type": "none",
+            "color": "#D0021B",
+            "id": 27004450,
+            "hotkey": "",
+            "applicable_type": "all",
+            "classes": []
+        },
+        {
+            "name": "Valid",
+            "value_type": "none",
+            "color": "#417505",
+            "id": 27004451,
+            "hotkey": "",
+            "applicable_type": "all",
+            "classes": []
+        }
+    ],
+    "projectType": "images"
+}

@@ -1,0 +1,92 @@
+{
+    "description": "",
+    "tags": [
+        {
+            "id": 19475906,
+            "tagId": 27004451,
+            "name": "Valid",
+            "value": null,
+            "labelerLogin": null,
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-01-31T20:43:48.570Z"
+        }
+    ],
+    "size": {
+        "height": 480,
+        "width": 640
+    },
+    "objects": [
+        {
+            "id": 345592235,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "TeaAndPotatoes",
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-02-06T06:15:05.085Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        113,
+                        131
+                    ],
+                    [
+                        178,
+                        194
+                    ]
+                ],
+                "interior": []
+            }
+        },
+        {
+            "id": 345592234,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "TeaAndPotatoes",
+            "createdAt": "2020-01-31T20:43:48.570Z",
+            "updatedAt": "2020-02-06T06:16:40.602Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        61,
+                        50
+                    ],
+                    [
+                        110,
+                        97
+                    ]
+                ],
+                "interior": []
+            }
+        },
+        {
+            "id": 347441247,
+            "classId": 1290411,
+            "description": "",
+            "geometryType": "rectangle",
+            "labelerLogin": "JohnnyWobble",
+            "createdAt": "2020-02-06T06:15:04.805Z",
+            "updatedAt": "2020-02-06T06:17:32.229Z",
+            "tags": [],
+            "classTitle": "Power_Cell",
+            "points": {
+                "exterior": [
+                    [
+                        212,
+                        288
+                    ],
+                    [
+                        309,
+                        386
+                    ]
+                ],
+                "interior": []
+            }
+        }
+    ]
+}
