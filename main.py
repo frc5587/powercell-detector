@@ -1,8 +1,21 @@
 """
+ -- v1 --
 accuracy: 95.4%
 speed: 66.7 fps
 ball accuracy: 64.1%   (90%?)
+
+ -- v2 --
+accuracy: 93.0%
+speed: 86.0 fps
+ball accuracy: 56.4%
+
+fix:
+d104290
+00035
+03580
+03620
 """
+from functools import reduce
 from pathlib import Path
 import numpy as np
 import os
@@ -19,23 +32,27 @@ ann_path = Path("./powercell-data/ann")
 use_cam = False
 manual = False
 
-ball_upper1 = (44, 255, 255)
-ball_lower1 = (4, 63, 39)
-ball_upper2 = (55, 79, 255)
-ball_lower2 = (25, 19, 248)
+# ball_upper1 = (44, 255, 255)
+# ball_lower1 = (4, 63, 39)
+# ball_upper2 = (55, 79, 255)
+# ball_lower2 = (25, 19, 248)
 
+hsv_bounds = [(0, 90, 197, 86, 255, 255), (0, 186, 164, 58, 255, 208), (5, 9, 243, 33, 255, 255), (5, 165, 35, 55, 255, 164)]
 ball_area_thresh = .6
 
 
 def get_ball(img, show=False):
     frame = im.resize(img, width=600)
-    blur = cv2.bilateralFilter(frame, 5, 175, 175)
+    # blur = cv2.bilateralFilter(frame, 5, 175, 175)
+    blur = cv2.GaussianBlur(frame, (15, 15), 0)
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
 
-    mask1 = cv2.inRange(hsv, ball_lower1, ball_upper1)
-    mask2 = cv2.inRange(hsv, ball_lower2, ball_upper2)
-    mask = cv2.bitwise_or(mask1, mask2)
-    mask = cv2.erode(mask, None, iterations=2)
+    masks = [cv2.inRange(hsv, bound[:3], bound[3:]) for bound in hsv_bounds]
+
+    # mask1 = cv2.inRange(hsv, ball_lower1, ball_upper1)
+    # mask2 = cv2.inRange(hsv, ball_lower2, ball_upper2)
+
+    mask = reduce(cv2.bitwise_or, masks)
 
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = im.grab_contours(cnts)
@@ -64,50 +81,55 @@ def get_ball(img, show=False):
         return balls
 
 
-accuracy = []
-wrong_balls = 0
-total_balls = 0
+def main():
+    accuracy = []
+    wrong_balls = 0
+    total_balls = 0
 
-if use_cam:
-    vs = VideoStream(src=0).start()
-    then = datetime.datetime.now()
-    frames = 0
-    while True:
-        frames += 1
-        fr = vs.read()
-        get_ball(fr, show=True)
-        key = cv2.waitKey(1) & 0xFF
-        # if the 'q' key is pressed, stop the loop
-        if key == ord("q"):
-            break
-    vs.stop()
-else:
-    then = datetime.datetime.now()
-    for frames, file in enumerate(os.listdir(img_path), start=1):
-        ann = json.load(open(ann_path/(file + ".json"), 'r'))
-        gt_balls = len(ann["objects"])
-        fr = cv2.imread(str(img_path/file))
-        balls = get_ball(fr, show=manual)
+    if use_cam:
+        vs = VideoStream(src=0).start()
+        then = datetime.datetime.now()
+        frames = 0
+        while True:
+            frames += 1
+            fr = vs.read()
+            get_ball(fr, show=True)
+            key = cv2.waitKey(1) & 0xFF
+            # if the 'q' key is pressed, stop the loop
+            if key == ord("q"):
+                break
+        vs.stop()
+    else:
+        then = datetime.datetime.now()
+        for frames, file in enumerate(os.listdir(img_path), start=1):
+            ann = json.load(open(ann_path/(file + ".json"), 'r'))
+            gt_balls = len(ann["objects"])
+            fr = cv2.imread(str(img_path/file))
+            balls = get_ball(fr, show=manual)
 
-        wrong = abs(gt_balls - len(balls))
-        wrong_balls += wrong
-        total_balls += gt_balls
+            wrong = abs(gt_balls - len(balls))
+            wrong_balls += wrong
+            total_balls += gt_balls
 
-        if wrong == 0:
-            accuracy.append(1)
-        elif wrong > 0 and gt_balls == 0:
-            accuracy.append(0)
-        else:
-            accuracy.append(1-(wrong/gt_balls))
+            if wrong == 0:
+                accuracy.append(1)
+            elif wrong > 0 and gt_balls == 0:
+                accuracy.append(0)
+            else:
+                accuracy.append(1-(wrong/gt_balls))
 
-        if manual:
-            cv2.waitKey(0)
+            if manual:
+                print(file)
+                cv2.waitKey(0)
 
-secs = (datetime.datetime.now() - then).seconds
+    secs = (datetime.datetime.now() - then).seconds
 
-print("time:", secs)
-print("pics/sec:", frames / secs)
-print("accuracy:", "n/a" if len(accuracy) == 0 else np.array(accuracy).mean())
-print("ball accuracy:", "n/a" if total_balls == 0 else (1 - wrong_balls/total_balls))
+    print("time:", secs)
+    print("pics/sec:", frames / secs)
+    print("accuracy:", "n/a" if len(accuracy) == 0 else np.array(accuracy).mean())
+    print("ball accuracy:", "n/a" if total_balls == 0 else (1 - wrong_balls/total_balls))
 
-cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    main()
+    cv2.destroyAllWindows()
