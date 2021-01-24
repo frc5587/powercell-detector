@@ -35,4 +35,3 @@ accuracy: 95.0%
 speed: 97.2 fps
 
 ball accuracy: 78.0%
-=======
