@@ -34,3 +34,13 @@ accuracy: 95.0%
 speed: 97.2 fps
 
 ball accuracy: 78.0%
+
+## -- v5 -- 
+This is v4, but with a little manual tuning on the hue values
+
+accuracy: 97.2%
+
+speed: 97.2 fps
+
+ball accuracy: 79.5%
+
