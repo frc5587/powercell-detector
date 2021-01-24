@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-# USAGE: You need to specify a filter and "only one" image source
-#
-# (python) range-detector --filter RGB --image /path/to/image.png
-# or
-# (python) range-detector --filter HSV --webcam
 from functools import reduce, partial
 import cv2
 import argparse
@@ -13,15 +5,14 @@ from operator import xor
 import numpy as np
 import imutils as im
 
-# from main import ball_area_thresh
-
 ball_area_thresh = 0.6
 
 windows = []
 
 # vals = [(25, 128, 188, 34, 255, 255), (0, 223, 165, 63, 255, 255)]
-vals = [(0, 90, 197, 86, 255, 255), (0, 186, 164, 58, 255, 208), (5, 9, 243, 33, 255, 255), (5, 165, 35, 55, 255, 164)]
+vals = [(26, 106, 177, 140, 255, 255), (33, 207, 218, 144, 255, 255), (21, 37, 197, 93, 255, 255), (18, 134, 50, 77, 255, 250)]
 DEFAULT_VAL = (0, 0, 0, 255, 255, 255)
+# vals = [DEFAULT_VAL]
 
 
 def update_thresh(value):

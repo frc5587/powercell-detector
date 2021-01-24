@@ -1,20 +1,3 @@
-"""
- -- v1 --
-accuracy: 95.4%
-speed: 66.7 fps
-ball accuracy: 64.1%   (90%?)
-
- -- v2 --
-accuracy: 93.0%
-speed: 86.0 fps
-ball accuracy: 56.4%
-
-fix:
-d104290
-00035
-03580
-03620
-"""
 from functools import reduce
 from pathlib import Path
 import numpy as np
@@ -30,28 +13,18 @@ from imutils.video import VideoStream
 img_path = Path("./powercell-data/img")
 ann_path = Path("./powercell-data/ann")
 use_cam = False
-manual = False
+manual = True
 
-# ball_upper1 = (44, 255, 255)
-# ball_lower1 = (4, 63, 39)
-# ball_upper2 = (55, 79, 255)
-# ball_lower2 = (25, 19, 248)
-
-hsv_bounds = [(0, 90, 197, 86, 255, 255), (0, 186, 164, 58, 255, 208), (5, 9, 243, 33, 255, 255), (5, 165, 35, 55, 255, 164)]
+hsv_bounds = [(24, 91, 199, 123, 255, 255), (18, 172, 182, 91, 255, 245), (26, 30, 233, 70, 255, 255), (22, 159, 57, 79, 255, 182)]
 ball_area_thresh = .6
 
 
 def get_ball(img, show=False):
     frame = im.resize(img, width=600)
-    # blur = cv2.bilateralFilter(frame, 5, 175, 175)
     blur = cv2.GaussianBlur(frame, (15, 15), 0)
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
 
     masks = [cv2.inRange(hsv, bound[:3], bound[3:]) for bound in hsv_bounds]
-
-    # mask1 = cv2.inRange(hsv, ball_lower1, ball_upper1)
-    # mask2 = cv2.inRange(hsv, ball_lower2, ball_upper2)
-
     mask = reduce(cv2.bitwise_or, masks)
 
     cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
