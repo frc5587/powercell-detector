@@ -1,4 +1,3 @@
-import os
 from functools import reduce
 from pathlib import Path
 import json
@@ -12,7 +11,7 @@ import cv2
 class SGDColorBoundsLearner:
     ball_area_thresh = 0.6
 
-    def __init__(self, data, lr=10, lr_decay=0.8, max_value=256, nbounds=4, bs=None):
+    def __init__(self, data, lr=10, lr_decay=0.8, nbounds=4, bs=None):
         self.lr = lr
         self.lr_decay = lr_decay
         self.data = data
@@ -50,7 +49,7 @@ class SGDColorBoundsLearner:
         for inp, out in self.data:
             loss = 0
             preds = self.predict(inp)
-            loss += 50 * abs(len(preds) - len(out))
+            loss += 100 * abs(len(preds) - len(out))
 
             if len(preds) > 0 and len(out) > 0:
                 preds, out = self.make_same_length(preds, out)
@@ -159,7 +158,7 @@ if __name__ == "__main__":
     annotation_path = Path("./powercell-data/ann")
 
     data_set = get_data(image_path, annotation_path)
-    learner = SGDColorBoundsLearner(data_set, lr=5, lr_decay=0.9, nbounds=3)
+    learner = SGDColorBoundsLearner(data_set, lr=15, lr_decay=0.8, nbounds=4)
 
     learner.fit(20)
 
