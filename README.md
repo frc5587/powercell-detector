@@ -25,7 +25,6 @@ accuracy: 96.3%
 speed: 92.7 fps
 
 ball accuracy: 74.8%
-<<<<<<< HEAD:README
 
 ## -- v4 -- 
 This version uses 4 filters all tuned by a neural network, but with a wider dataset. Even though it looks better on paper is actually may be worse than v3, this tends to also calls pieces of the wheel of fortune powercells.
