@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import random as r
 import datetime
+import os
 
 import numpy as np
 import cv2
@@ -23,13 +24,21 @@ class SGDColorBoundsLearner:
         self.best_epoch = None
 
         # self.bounds = np.random.randint(0, max_value, (3, nbounds, 2))
-        self.bounds = np.array([((0, 90, 197), (86, 255, 255)), ((0, 186, 164), (58, 255, 208)), ((5, 9, 243), (33, 255, 255)), ((5, 165, 35), (55, 255, 164))])[:nbounds]
+        # self.bounds = np.array([((0, 90, 197), (86, 255, 255)), ((0, 186, 164), (58, 255, 208)), ((5, 9, 243), (33, 255, 255)), ((5, 165, 35), (55, 255, 164))])[:nbounds]
+        self.bounds = np.array([((22, 119, 190), (90, 255, 255)), ((54, 222, 197), (93, 255, 255)), ((27, 27, 218), (91, 255, 255)), ((15, 156, 83), (72, 255, 230))])  # v5
+        # self.bounds = np.array([((7, 121, 190), (69, 250, 253)), ((71, 239, 214), (72, 234, 234)), ((27, 40, 213), (70, 243, 255)), ((23, 154, 74), (51, 253, 209))])  # v6
+        # self.bounds = np.array([((25, 121, 190), (80, 246, 249)), ((64, 232, 207), (83, 245, 245)), ((27, 27, 218), (81, 245, 255)), ((14, 155, 83), (62, 251, 222))])
 
     def predict(self, hsv_img):
         masks = map(lambda bound: cv2.inRange(hsv_img, bound[0], bound[1]), self.bounds)
         mask = reduce(cv2.bitwise_or, masks)
 
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, iterations=4, kernel=None)
+
         cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+
+        hulls = list(map(cv2.convexHull, cnts))
+        mask = cv2.drawContours(np.zeros(mask.shape, dtype='uint8'), hulls, -1, 255, -1)
 
         balls = []
         for i, contour in enumerate(cnts):
@@ -37,7 +46,7 @@ class SGDColorBoundsLearner:
             bbox = np.array([[max(0, int(x - radius)), max(0, int(y - radius))], [min(mask.shape[1], int(x + radius) + 1), min(mask.shape[0], int(y + radius) + 1)]])
             roi = mask[bbox[0, 1]:bbox[1, 1], bbox[0, 0]:bbox[1, 0]]
 
-            circle_mask = cv2.circle(np.zeros(roi.shape), (roi.shape[1] // 2, roi.shape[1] // 2), int(radius), 1, -1)
+            circle_mask = cv2.circle(np.zeros(roi.shape), (roi.shape[1] // 2, roi.shape[0] // 2), int(radius), 1, -1)
             circle_mask = np.logical_and(circle_mask, roi).astype(float)
             if circle_mask.mean() > self.ball_area_thresh:
                 balls.append((x, y, radius))
@@ -88,17 +97,20 @@ class SGDColorBoundsLearner:
             for i, n in enumerate(self.bounds):
                 for j, mm in enumerate(n):
                     for k, value in enumerate(mm):
-                        self.bounds[i, j, k] += self.lr
+                        coeff = 1 if j == 0 else -1
+                        self.bounds[i, j, k] += self.lr * coeff
                         self.check_bound(i, j, k)
                         new_loss = self.get_loss()
                         if new_loss > old_loss:
-                            self.bounds[i, j, k] = value - self.lr
+                            self.bounds[i, j, k] = value - (self.lr * coeff)
                             self.check_bound(i, j, k)
                             newer_loss = self.get_loss()
                             if newer_loss > old_loss:
                                 self.bounds[i, j, k] = value
-
-                        old_loss = new_loss
+                            else:
+                                old_loss = newer_loss
+                        else:
+                            old_loss = new_loss
 
             if new_loss < self.best_loss:
                 self.best_loss = new_loss
@@ -129,8 +141,9 @@ def sort_top_l_to_bottom_r(anns):
 
 
 def get_data(img_path, ann_path):
-    files = json.load(open(ann_path/'..'/'sample.json'))
-    files = files['balls'] + files['ballsnt']
+    # files = json.load(open(ann_path/'..'/'sample.json'))
+    # files = files['balls'] + files['ballsnt']
+    files = os.listdir(img_path)
     data = []
     for img_file in files:
         ann = json.load(open(ann_path/(img_file + ".json")))
@@ -158,7 +171,7 @@ if __name__ == "__main__":
     annotation_path = Path("./powercell-data/ann")
 
     data_set = get_data(image_path, annotation_path)
-    learner = SGDColorBoundsLearner(data_set, lr=15, lr_decay=0.8, nbounds=4)
+    learner = SGDColorBoundsLearner(data_set, lr=1, lr_decay=0.6)
 
     learner.fit(20)
 

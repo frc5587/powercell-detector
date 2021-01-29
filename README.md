@@ -44,3 +44,12 @@ speed: 97.2 fps
 
 ball accuracy: 79.5%
 
+## -- v6 --
+Turns objects into convex hulls before trying to circle detect, and tuned the bounds from v5.
+As an added note, I also fixed the SGD, there was a bug in the gradient descent with setting the old loss and there was a bug in the predictor, it wasn't setting the center of the circle correctly.
+
+accuracy: 97.2%
+
+speed: 92.1 fps
+
+ball accuracy: 83.1%
