@@ -7,7 +7,7 @@ from flask import Flask, Response, render_template
 from math import tan, radians
 import cv2
 
-from finder import PowercellFinder, preprocess, MyManager
+from finder import PowercellFinder, preprocess, LifoQueueManager
 
 DEFAULT_IMG = np.zeros((720, 1280, 3))
 
@@ -57,9 +57,8 @@ def generate():
                 frame = cv2.putText(frame, "%4.1fdeg" % ball["pos"]["theta"], (ball['px']['x'], ball['px']['y']), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 4)
                 frame = cv2.putText(frame, "%4.1fdeg" % ball["pos"]["theta"], (ball['px']['x'], ball['px']['y']), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
 
-                frame = cv2.putText(frame, "%3.1fm" % ball["pos"]["radius"], (ball['px']['x'], ball['px']['y'] + 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 4)
-                frame = cv2.putText(frame, "%3.1fm" % ball["pos"]["radius"], (ball['px']['x'], ball['px']['y'] + 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
-                # print(ball['pos'], ball["extras"])
+                frame = cv2.putText(frame, "%4.2fm" % ball["pos"]["radius"], (ball['px']['x'], ball['px']['y'] + 30), cv2.FONT_HERSHEY_PLAIN, 2, (0, 0, 0), 4)
+                frame = cv2.putText(frame, "%4.2fm" % ball["pos"]["radius"], (ball['px']['x'], ball['px']['y'] + 30), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
 
         except Empty:
             frame = DEFAULT_IMG
@@ -73,12 +72,12 @@ def generate():
 
 
 if __name__ == '__main__':
-    manager = MyManager()
+    manager = LifoQueueManager()
     manager.start()
     video_q = manager.LifoQueue()
 
     # pc_finder = PowercellFinder(0, preprocess_fn=preprocess)
-    pc_finder = PowercellFinder(0, preprocess_fn=preprocess, height=.75)  # testing
+    pc_finder = PowercellFinder(0, preprocess_fn=preprocess, height=.75, offset_angle=-12)  # testing
 
     proc = Process(target=pc_finder.run, kwargs=dict(out_queue=video_q))
     proc.start()
