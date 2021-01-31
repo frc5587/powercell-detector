@@ -13,6 +13,7 @@ img_path = Path("./powercell-data/img")
 ann_path = Path("./powercell-data/ann")
 use_cam = False
 manual = False
+video = True
 
 # hsv_bounds = [(24, 91, 199, 123, 255, 255), (18, 172, 182, 91, 255, 245), (26, 30, 233, 70, 255, 255), (22, 159, 57, 79, 255, 182)]  # v3
 # hsv_bounds = [(22, 119, 190, 152, 255, 255), (54, 222, 197, 100, 255, 255), (27, 27, 218, 99, 255, 255), (15, 156, 83, 121, 255, 230)]  # v4
@@ -34,7 +35,7 @@ def stack(*imgs):
         return np.hstack(imgs)
 
 
-def get_ball(img, show=False):
+def get_ball(img, show=False, get_img=False):
     blur = cv2.GaussianBlur(img, (15, 15), 0)
     hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
 
@@ -66,8 +67,10 @@ def get_ball(img, show=False):
 
     if show:
         mask = np.stack([mask for _ in range(3)], 2)
-        cv2.imshow("Stream", stack(img, mask))
-        return balls
+        final = stack(img, mask)
+        if not get_img:
+            cv2.imshow("Stream", final)
+        return img if get_img else balls
     else:
         return balls
 
@@ -77,7 +80,26 @@ def main():
     wrong_balls = 0
     total_balls = 0
 
-    if use_cam:
+    if video:
+        fname = "testing.mp4"
+        cap = cv2.VideoCapture(fname)
+        out = cv2.VideoWriter(
+            f"out-{fname}",
+            cv2.VideoWriter_fourcc(*'mp4v'),
+            15.0,
+            (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        )
+        then = datetime.datetime.now()
+        frames = 0
+        while cap.isOpened():
+            ret, fr = cap.read()
+            if not ret: break
+            frames += 1
+            frame = get_ball(fr, show=True, get_img=True)
+            out.write(frame)
+        out.release()
+
+    elif use_cam:
         vs = VideoStream(src=0).start()
         then = datetime.datetime.now()
         frames = 0
