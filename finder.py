@@ -195,17 +195,17 @@ class PowercellFinder:
             height_radio = (1 - y / self.frame_height)
 
             # the real x and y position of the ball
-            # Note: the camera is at (0, 0) and it is facing positive y, so the farther somthing is,
-            # the higher its y value. Any anything on the right will have a positive x while
-            # anything on the left will have negative x
-            global_y = self.height * tan(radians(self.vfov * height_radio + (90 + self.offset_angle - self.vfov)))
-            global_x = (height_radio * self.w_diff + self.bottom_w) * ((x * 2/self.frame_width) - 1)
+            # Note: the camera is at (0, 0) and it is facing positive x, so the farther somthing is,
+            # the higher its x value. Any anything on the right will have a positive y while
+            # anything on the left will have negative y
+            global_x = self.height * tan(radians(self.vfov * height_radio + (90 + self.offset_angle - self.vfov)))
+            global_y = (height_radio * self.w_diff + self.bottom_w) * ((x * 2/self.frame_width) - 1)
 
             # the real theta and radius position, this is probably more useful than x and y
             # Note: the camera is at (0, 0) and it is facing 0 deg, so anything to the right of the
             # camera has a positive angle, and anything on the left has a negative one
             global_r = sqrt(global_x**2 + global_y**2)
-            global_theta = degrees(atan(global_x / global_y))
+            global_theta = degrees(atan(global_y / global_x))
 
             ball_data.append({
                 "px": {
