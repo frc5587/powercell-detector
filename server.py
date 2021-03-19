@@ -6,6 +6,7 @@ import numpy as np
 from flask import Flask, Response, render_template
 from math import tan, radians
 import cv2
+from networktables import NetworkTables
 
 from finder import PowercellFinder, preprocess, LifoQueueManager
 
@@ -27,6 +28,7 @@ def stream():
 def generate():
     last_time = datetime.datetime.now()
     times = []
+
     while True:
         try:
             ball_data, frame, time = video_q.get(timeout=0.5)
@@ -71,15 +73,56 @@ def generate():
         yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(img) + b'\r\n'
 
 
+def send_data(vqueue):
+    table = NetworkTables.getTable("/PowercellFinder")
+
+    tn = table.getEntry("tn")
+    tr = table.getEntry("tr")
+    tx = table.getEntry("tx")
+    ty = table.getEntry("ty")
+    ttheta = table.getEntry("ttheta")
+
+    last_time = datetime.datetime.now()
+
+    while True:
+        ball_data, frame, time = vqueue.get()
+        ball_data: list
+        if time < last_time:  # check if frame is newer than the most recent one
+            continue
+        else:
+            last_time = time
+
+        if not ball_data:
+            tn.setDouble(0)
+            tr.setDouble(0)
+            tx.setDouble(0)
+            ty.setDouble(0)
+            ttheta.setDouble(0)
+
+        else:
+            ball_data.sort(key=lambda x: x['pos']['radius'])
+            closest_ball = ball_data[0]
+
+            tn.setDouble(len(ball_data))
+            tr.setDouble(closest_ball['pos']['radius'])
+            tx.setDouble(closest_ball['pos']['x'])
+            ty.setDouble(closest_ball['pos']['y'])
+            ttheta.setDouble(closest_ball['pos']['theta'])
+
+
 if __name__ == '__main__':
     manager = LifoQueueManager()
     manager.start()
-    video_q = manager.LifoQueue()
+    video_q = manager.LifoQueue(maxsize=10)
 
     # pc_finder = PowercellFinder(0, preprocess_fn=preprocess)
     pc_finder = PowercellFinder(0, preprocess_fn=preprocess, height=.75, offset_angle=-12)  # testing
 
-    proc = Process(target=pc_finder.run, kwargs=dict(out_queue=video_q))
-    proc.start()
+    pc_finder_proc = Process(target=pc_finder.run, kwargs=dict(out_queue=video_q))
+    pc_finder_proc.start()
 
-    app.run(host="0.0.0.0", port=80)
+    # data_sender_proc = Process(target=send_data, args=(video_q,))
+    # data_sender_proc.start()
+
+    # app.run(host="0.0.0.0", port=5587)
+    send_data(video_q)

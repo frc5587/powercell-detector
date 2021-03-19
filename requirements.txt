@@ -19,3 +19,4 @@ triangle==20190115.3
 vispy==0.6.4
 Werkzeug==1.0.1
 wincertstore==0.2
+pynetworktables==2021.0.0
