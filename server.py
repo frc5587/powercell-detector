@@ -116,13 +116,13 @@ if __name__ == '__main__':
     video_q = manager.LifoQueue(maxsize=10)
 
     # pc_finder = PowercellFinder(0, preprocess_fn=preprocess)
-    pc_finder = PowercellFinder(0, preprocess_fn=preprocess, height=.75, offset_angle=-12)  # testing
+    pc_finder = PowercellFinder(1, preprocess_fn=preprocess, height=.66, offset_angle=-6.5)  # testing
 
     pc_finder_proc = Process(target=pc_finder.run, kwargs=dict(out_queue=video_q))
     pc_finder_proc.start()
 
-    # data_sender_proc = Process(target=send_data, args=(video_q,))
-    # data_sender_proc.start()
+    data_sender_proc = Process(target=send_data, args=(video_q,))
+    data_sender_proc.start()
 
-    # app.run(host="0.0.0.0", port=5587)
-    send_data(video_q)
+    app.run(host="0.0.0.0", port=5587)
+    # send_data(video_q)

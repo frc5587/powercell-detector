@@ -12,7 +12,8 @@ import cv2
 
 class PowercellFinder:
     # HSV color boundaries for detecting the powercells
-    DEFAULT_BOUNDS = [(24, 121, 190, 78, 247, 247), (66, 234, 209, 81, 243, 243), (27, 27, 218, 79, 245, 255), (20, 156, 83, 60, 253, 220)]  # v6
+    # DEFAULT_BOUNDS = [(24, 121, 190, 78, 247, 247), (66, 234, 209, 81, 243, 243), (27, 27, 218, 79, 245, 255), (20, 156, 83, 60, 253, 220)]  # v6
+    DEFAULT_BOUNDS = [(26, 109, 104, 31, 255, 255), (30, 56, 185, 33, 213, 255)]
     DEFAULT_PREPROCESS = partial(cv2.cvtColor, code=cv2.COLOR_BGR2HSV)
     DEFAULT_POSTPROCESS = (lambda *args: None)
 
