@@ -1,0 +1,10 @@
+[Unit]
+Description=Powercell Detector Automatic startup
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3.7 /home/pi/Documents/Code/powercell-detector/server.py
+
+[Install]
+WantedBy=multi-user.target

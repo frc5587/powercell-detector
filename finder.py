@@ -5,6 +5,7 @@ import numpy as np
 import datetime
 from math import tan, radians, degrees, sqrt, sin, atan
 from typing import List, Tuple, Union, Callable, Dict
+import atexit
 
 from imutils.video import VideoStream
 import cv2
@@ -115,6 +116,8 @@ class PowercellFinder:
         actually improves performance.
         """
         self.stream = VideoStream(src=self.src)  # gets VideoStream from src
+        
+        atexit.register(lambda: self.stream.release())
 
         # Frame height and width
         self.frame_width = self.stream.stream.stream.get(cv2.CAP_PROP_FRAME_WIDTH)

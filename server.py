@@ -5,7 +5,7 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 
-from multiprocessing import Process
+from multiprocessing import Process, Event
 from queue import Empty
 import datetime
 from time import sleep
@@ -14,7 +14,7 @@ import numpy as np
 from flask import Flask, Response, render_template
 from math import tan, radians
 import cv2
-from networktables import NetworkTables
+from networktables import NetworkTablesInstance, NetworkTables
 
 from finder import PowercellFinder, preprocess, LifoQueueManager
 
@@ -81,9 +81,22 @@ def generate():
         yield b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(img) + b'\r\n'
 
 
-def send_data(vqueue):
-    table = NetworkTables.getTable("/PowercellFinder")
+def on_connected(*args):
+    print("CONNECTED", args)
+    connected_evt.set()
 
+
+def send_data(vqueue):
+    NetworkTables.initialize(server='10.55.87.2')
+    NetworkTables.addConnectionListener(on_connected)
+    
+    connected_evt.wait()
+    
+    table = NetworkTables.getTable("powercellDetector")
+    
+    test = NetworkTables.getTable("SmartDashboard")
+    print(test.getEntry("gyro").getDouble(0))
+    
     tn = table.getEntry("tn")
     tr = table.getEntry("tr")
     tx = table.getEntry("tx")
@@ -119,12 +132,17 @@ def send_data(vqueue):
 
 def test_cam(src):
     cap = cv2.VideoCapture(src)
-    if cap is None or not cap.isOpened():
+    if cap is None:
+        return False
+    elif not cap.isOpened():
+        cap.release()
         return False
     else:
+        cap.release()
         return True
 
 if __name__ == '__main__':
+    connected_evt = Event()
     while not test_cam(0):
         sleep(1)
         print("Waiting for camera connection...")
@@ -133,7 +151,7 @@ if __name__ == '__main__':
     manager.start()
     video_q = manager.LifoQueue(maxsize=10)
     
-    pc_finder = PowercellFinder(1, preprocess_fn=preprocess, height=.66, offset_angle=-6.5)
+    pc_finder = PowercellFinder(0, preprocess_fn=preprocess, height=.65, offset_angle=-8.5)
 
     pc_finder_proc = Process(target=pc_finder.run, kwargs=dict(out_queue=video_q))
     pc_finder_proc.start()
@@ -141,4 +159,4 @@ if __name__ == '__main__':
     data_sender_proc = Process(target=send_data, args=(video_q,))
     data_sender_proc.start()
 
-    app.run(host="0.0.0.0", port=5587)
+    app.run(host="0.0.0.0", port=80)
