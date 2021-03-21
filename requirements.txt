@@ -8,8 +8,8 @@ itsdangerous==1.1.0
 Jinja2==2.11.2
 MarkupSafe==1.1.1
 numpy==1.18.1
-opencv-contrib-python==4.5.1.48
-opencv-python==4.1.2.30
+#opencv-contrib-python==4.5.1.48
+#opencv-python==4.1.2.30
 p5==0.6.0
 pandas==0.25.3
 python-dateutil==2.8.1

@@ -11,9 +11,9 @@ from imutils.video import VideoStream
 
 img_path = Path("./powercell-data/img")
 ann_path = Path("./powercell-data/ann")
-use_cam = False
+use_cam = True
 manual = False
-video = True
+video = False
 
 # hsv_bounds = [(24, 91, 199, 123, 255, 255), (18, 172, 182, 91, 255, 245), (26, 30, 233, 70, 255, 255), (22, 159, 57, 79, 255, 182)]  # v3
 # hsv_bounds = [(22, 119, 190, 152, 255, 255), (54, 222, 197, 100, 255, 255), (27, 27, 218, 99, 255, 255), (15, 156, 83, 121, 255, 230)]  # v4

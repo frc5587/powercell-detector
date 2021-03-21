@@ -1,6 +1,14 @@
+import os
+
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
+
 from multiprocessing import Process
 from queue import Empty
 import datetime
+from time import sleep
 
 import numpy as np
 from flask import Flask, Response, render_template
@@ -109,14 +117,23 @@ def send_data(vqueue):
             ty.setDouble(closest_ball['pos']['y'])
             ttheta.setDouble(closest_ball['pos']['theta'])
 
+def test_cam(src):
+    cap = cv2.VideoCapture(src)
+    if cap is None or not cap.isOpened():
+        return False
+    else:
+        return True
 
 if __name__ == '__main__':
+    while not test_cam(0):
+        sleep(1)
+        print("Waiting for camera connection...")
+    
     manager = LifoQueueManager()
     manager.start()
     video_q = manager.LifoQueue(maxsize=10)
-
-    # pc_finder = PowercellFinder(0, preprocess_fn=preprocess)
-    pc_finder = PowercellFinder(1, preprocess_fn=preprocess, height=.66, offset_angle=-6.5)  # testing
+    
+    pc_finder = PowercellFinder(1, preprocess_fn=preprocess, height=.66, offset_angle=-6.5)
 
     pc_finder_proc = Process(target=pc_finder.run, kwargs=dict(out_queue=video_q))
     pc_finder_proc.start()
@@ -125,4 +142,3 @@ if __name__ == '__main__':
     data_sender_proc.start()
 
     app.run(host="0.0.0.0", port=5587)
-    # send_data(video_q)
