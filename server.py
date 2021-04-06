@@ -103,6 +103,11 @@ def send_data(vqueue):
     ty = table.getEntry("ty")
     ttheta = table.getEntry("ttheta")
 
+    tr_arr = table.getEntry("trArr")
+    tx_arr = table.getEntry("txArr")
+    ty_arr = table.getEntry("tyArr")
+    ttheta_arr = table.getEntry("tthetaArr")
+
     last_time = datetime.datetime.now()
 
     while True:
@@ -120,6 +125,11 @@ def send_data(vqueue):
             ty.setDouble(0)
             ttheta.setDouble(0)
 
+            tr_arr.setDoubleArray([])
+            tx_arr.setDoubleArray([])
+            ty_arr.setDoubleArray([])
+            ttheta_arr.setDoubleArray([])
+
         else:
             ball_data.sort(key=lambda x: x['pos']['radius'])
             closest_ball = ball_data[0]
@@ -129,6 +139,12 @@ def send_data(vqueue):
             tx.setDouble(closest_ball['pos']['x'])
             ty.setDouble(closest_ball['pos']['y'])
             ttheta.setDouble(closest_ball['pos']['theta'])
+
+            tr_arr.setDoubleArray(map(lambda x: x['pos']['x'], ball_data))
+            tx_arr.setDoubleArray(map(lambda x: x['pos']['x'], ball_data))
+            ty_arr.setDoubleArray(map(lambda x: x['pos']['x'], ball_data))
+            ttheta_arr.setDoubleArray(map(lambda x: x['pos']['x'], ball_data))
+
 
 def test_cam(src):
     cap = cv2.VideoCapture(src)
@@ -140,6 +156,7 @@ def test_cam(src):
     else:
         cap.release()
         return True
+
 
 if __name__ == '__main__':
     connected_evt = Event()
