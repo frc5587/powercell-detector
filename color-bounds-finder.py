@@ -114,7 +114,7 @@ def main():
     if args['image']:
         image = cv2.imread(args['image'])
     else:
-        camera = cv2.VideoCapture(1)
+        camera = cv2.VideoCapture(0)
 
     make_thresh_trackbar()
 
